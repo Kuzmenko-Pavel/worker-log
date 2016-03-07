@@ -7,7 +7,7 @@ libtoolize --install --copy --force --automake
 aclocal -I m4
 autoconf
 autoheader
-automake 
+automake --add-missing 
 ./configure --enable-dummy --enable-debug
 make clean
 make
