@@ -3,6 +3,7 @@
 #include <boost/regex/icu.hpp>
 #include <map>
 #include <chrono>
+#include <string>
 
 #include "DB.h"
 #include "Log.h"
@@ -11,9 +12,7 @@
 #include "GeoIPTools.h"
 #include "BaseCore.h"
 #include "Core.h"
-#include "Informer.h"
 #include "Cookie.h"
-#include "DataBase.h"
 #include "Server.h"
 #include <signal.h>
 
@@ -73,29 +72,6 @@ CgiService::CgiService()
     free(attributes);
 }
 
-void CgiService::run()
-{
-    bcore->LoadRetargetingEntities();
-    int loop_count = 0;
-    for(;;)
-    {
-        //read mq and process
-        bcore->ProcessMQ();
-        if (loop_count == 72000)
-        {
-            loop_count = 0;
-            bcore->ClearSession(true);
-        }
-    
-        if(cfg->logMonitor)
-        {
-            stat->cpuUsage();
-        }
-        loop_count++;
-        sleep(1);
-    }
-}
-
 CgiService::~CgiService()
 {
    for(int i = 0; i < cfg->server_children_; i++)
@@ -107,6 +83,14 @@ CgiService::~CgiService()
    delete bcore;
 }
 
+void CgiService::run()
+{
+    for(;;)
+    {
+        stat->cpuUsage();
+        sleep(1);
+    }
+}
 void CgiService::Response(FCGX_Request *req,
                           const std::string &content,
                           const std::string &cookie)
@@ -298,7 +282,7 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
 
         for (unsigned int i=0; i<strs.size(); i++)
         {
-            if(strs[i].find(cfg->cookie_name_) != string::npos)
+            if(strs[i].find(cfg->cookie_name_) != std::string::npos)
             {
                 std::vector<std::string> name_value;
                 boost::split(name_value, strs[i], boost::is_any_of("="));
@@ -320,22 +304,9 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
             server_name = std::string(tmp_str);
         }
 
-        Response(req, bcore->Status(server_name, false), "");
+        Response(req, bcore->Status(server_name), "");
         return;
     }
-
-    if (url->param("show") == "full")
-    {
-        if( server_name.empty() && (tmp_str = FCGX_GetParam("SERVER_NAME", req->envp)) )
-        {
-            server_name = std::string(tmp_str);
-        }
-
-        Response(req, bcore->Status(server_name, true), "");
-        return;
-    }
-
-
     try
     {
         std::vector<std::string> excluded_offers;
@@ -442,15 +413,7 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
                      .retargeting_offers(retargeting_offers);
 
         std::string result;
-
-        if (url->param("show") == "usercode")
-        {
-            result = core->UserCode(&prm);
-        }
-        else
-        {
-            result = core->Process(&prm);
-        }
+        result = core->Process(&prm);
 
 
         ClearSilver::Cookie c = ClearSilver::Cookie(cfg->cookie_name_,
@@ -475,10 +438,7 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
                     printf("Time %s taken: %lld \n", __func__,  microseconds);
                     printf("%s\n","------------------------------------------------------------------");
                 #endif // DEBUG
-                if (url->param("show") != "usercode")
-                {
-                    core->ProcessSaveResults();
-                }
+                core->ProcessSaveResults();
             }
             catch (std::exception const &ex)
             {
@@ -504,7 +464,6 @@ void CgiService::SignalHandler(int signum)
     {
     case SIGHUP:
         std::clog<<"CgiService: sig hup"<<std::endl;
-        cfg->ReLoad();
         break;
     case SIGPIPE:
         std::clog<<"CgiService: sig pipe "<< "sig=" << signum << " tid=" << pthread_self() <<std::endl;

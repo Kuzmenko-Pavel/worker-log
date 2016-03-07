@@ -7,22 +7,11 @@
 #include <vector>
 #include <chrono>
 
-#include "Campaign.h"
 #include "EBranch.h"
-
-typedef long long			sphinx_int64_t;
-typedef unsigned long long	sphinx_uint64_t;
-
 /** \brief  Класс описывает рекламное предложение (например, товар или новость). */
 class Offer
 {
 public:
-    typedef std::map <const unsigned long,Offer*> Map;
-    typedef std::multimap <const float,Offer*, std::greater<float>> MapRate;
-    typedef std::map <const unsigned long,Offer*>::iterator it;
-    typedef std::map <const unsigned long,Offer*>::const_iterator cit;
-    typedef std::pair<const float,Offer*> PairRate;
-    typedef std::pair<const unsigned long,Offer*> Pair;
     typedef std::vector <Offer*> Vector;
     typedef std::vector <Offer*>::iterator itV;
 
@@ -133,19 +122,12 @@ public:
         }
     }
 
-    // Каждому элементу просмотра присваиваем уникальный токен
-    void gen();
-    void load();
-
-    std::string toJson() const;
     bool setBranch(const  EBranchT tbranch);
     std::string getBranch() const
     {
         return EBranchL2String(branch);
     };
     private:
-        char *cmd;
-        size_t len;
 };
 
 #endif // OFFER_H

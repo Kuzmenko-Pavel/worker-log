@@ -90,37 +90,6 @@ std::string ParamParse::getContextKeywordsString(const std::string& query)
         std::string qsn = stringWrapper(q, true);
         std::vector<std::string> strs;
         boost::split(strs,qs,boost::is_any_of("\t "),boost::token_compress_on);
-        for(int i=0; i<Config::Instance()->sphinx_field_len_; i++)
-        {
-            std::string col = std::string(Config::Instance()->sphinx_field_names_[i]);
-            std::string iret;
-            for (std::vector<std::string>::iterator it = strs.begin(); it != strs.end(); ++it)
-            {
-                    if (it != strs.begin())
-                    {
-                        iret += " | @"+col+" "+*it;
-                    }
-                    else
-                    {
-                        iret += "@"+col+" "+*it;
-                    }
-                //exactly_phrases += "<<" + *it + " ";
-            }
-            if(i)
-            {
-                ret += "| "+iret+" ";
-            }
-            else
-            {
-                ret += " "+iret+" ";
-            }
-        }
-/*
-        return "((@exactly_phrases \"" + exactly_phrases + "\") \
-        | (@title \"" + keywords + "\") \
-        | (@description \"" + keywords + "\") \
-        | (@keywords \"" + keywords + "\") \
-        | (@phrases \"" + keywords + "\"))";*/
         return ret;
 
     }
