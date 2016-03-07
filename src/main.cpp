@@ -83,9 +83,6 @@ int main(int argc, char *argv[])
     {
         cfg->server_socket_path_ = sock_path;
     }
-
-    cfg->dbInit();
-
     CgiService().run();
     return 0;
 }

@@ -92,6 +92,8 @@ BOOST_DATE_TIME()
 BOOST_REGEX()
 
 AC_CHECK_LIB([fcgi], [FCGX_FPrintF], [], [AC_MSG_ERROR([fcgi was not found])])
+AC_CHECK_LIB([GeoIP], [GeoIP_region_name_by_code], [], [AC_MSG_ERROR([GeoIP was not found])])
+AC_CHECK_LIB([tinyxml], [main], [], [AC_MSG_ERROR([tinyxml was not found])])
 
 CPPFLAGS="-W -Wall"
 
