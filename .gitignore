@@ -21,6 +21,8 @@ Makefile.in
 /aclocal.m4
 /compile
 /config.h.in
+/config.h
+/config.status
 /config.guess
 /config.log
 /config.sub
@@ -28,10 +30,13 @@ Makefile.in
 /configure
 /configure.scan
 /depcomp
+/.deps
 /install-sh
 /missing
 /m4/
 /stamp-h1
+/Makefile
+/libtool
 
 # Compiled Object files
 *.slo
