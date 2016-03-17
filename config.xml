@@ -9,7 +9,7 @@
     <user>www-data</user>
     <group>www-data</group>
     <!--путь к файлу сокета-->
-    <socket_path>/run/workerd/sock</socket_path>
+    <socket_path>/run/workerd/sockl</socket_path>
     <!--количество ниток-->
     <children>1</children>
 

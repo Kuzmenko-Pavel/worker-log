@@ -42,12 +42,13 @@ std::string Core::Process(Params *prms)
         printf("Time %s taken: %lld \n", __func__,  microseconds);
         printf("%s\n","/////////////////////////////////////////////////////////////////////////");
     #endif // DEBUG
-
+    retHtml = "{}";
     return retHtml;
 }
 //-------------------------------------------------------------------------------------------------------------------
 void Core::log()
 {
+    /*
     if(cfg->toLog())
     {
         std::clog<<"["<<tid<<"]";
@@ -68,12 +69,14 @@ void Core::log()
 
     if(cfg->logCookie)
         std::clog<<" cookie:"<<params->getCookieId();
+        */
 }
 //-------------------------------------------------------------------------------------------------------------------
 void Core::ProcessSaveResults()
 {
     request_processed_++;
 
+    /*
     log();
     mongo::BSONObj keywords = mongo::BSONObjBuilder().
     append("search", params->getSearch()).
@@ -151,4 +154,5 @@ void Core::ProcessSaveResults()
 
     
     vResult.clear();
+    */
 }

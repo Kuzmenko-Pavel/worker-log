@@ -1,6 +1,6 @@
 dnl Process this file with autoconf
 
-AC_INIT([workerd-log], m4_esyscmd([echo -n $(git describe --all --tags --long | sed "s/v\([0-9]\.[0-9]-.*\)-.*/\1/")]), [kyzmenko.pavel@gmail.com])
+AC_INIT([worker-log], m4_esyscmd([echo -n $(git describe --all --tags --long | sed "s/v\([0-9]\.[0-9]-.*\)-.*/\1/")]), [kyzmenko.pavel@gmail.com])
 
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE
