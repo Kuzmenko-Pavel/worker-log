@@ -19,12 +19,15 @@ Params::Params()
 {
     time_ = boost::posix_time::second_clock::local_time();
 }
+
 std::string time_t_to_string(time_t t)
 {
     std::stringstream sstr;
     sstr << t;
     return sstr.str();
 }
+
+
 Params &Params::cookie_id(const std::string &cookie_id)
 {
     if(cookie_id.empty())
@@ -71,7 +74,7 @@ Params &Params::parse()
 {
     try
     {
-        if (json_["items"].is_object())
+        if (json_["items"].is_array())
         {
             offers_ = json_["items"];
         }
@@ -93,21 +96,14 @@ Params &Params::parse()
     }
     try
     {
-        for (nlohmann::json::iterator it = offers_.begin(); it != offers_.end(); ++it) {
+        if (json_["informer"].is_object())
+        {
+            informer_ = json_["informer"];
         }
     }
     catch (std::exception const &ex)
     {
-        Log::err("exception %s: name: %s while loop json items", typeid(ex).name(), ex.what());
-    }
-    try
-    {
-        for (nlohmann::json::iterator it = params_.begin(); it != params_.end(); ++it) {
-        }
-    }
-    catch (std::exception const &ex)
-    {
-        Log::err("exception %s: name: %s while loop json params", typeid(ex).name(), ex.what());
+        Log::err("exception %s: name: %s while create json informer", typeid(ex).name(), ex.what());
     }
     return *this;
 }
