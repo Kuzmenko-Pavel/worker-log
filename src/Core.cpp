@@ -15,6 +15,7 @@
 #include "Core.h"
 #include "DB.h"
 #include "base64.h"
+#include "json.h"
 
 Core::Core()
 {
@@ -42,52 +43,55 @@ std::string Core::Process(Params *prms)
         printf("Time %s taken: %lld \n", __func__,  microseconds);
         printf("%s\n","/////////////////////////////////////////////////////////////////////////");
     #endif // DEBUG
-    retHtml = "{}";
-    return retHtml;
-}
-//-------------------------------------------------------------------------------------------------------------------
-void Core::log()
-{
-    /*
-    if(cfg->toLog())
-    {
-        std::clog<<"["<<tid<<"]";
-    }
-    if(cfg->logCoreTime)
-    {
-        std::clog<<" core time:"<< boost::posix_time::to_simple_string(endCoreTime - startCoreTime);
-    }
-
-    if(cfg->logIP)
-        std::clog<<" ip:"<<params->getIP();
-
-    if(cfg->logCountry)
-        std::clog<<" country:"<<params->getCountry();
-
-    if(cfg->logRegion)
-        std::clog<<" region:"<<params->getRegion();
-
-    if(cfg->logCookie)
-        std::clog<<" cookie:"<<params->getCookieId();
-        */
+    retJson["status"] = "OK";
+    return retJson.dump();
 }
 //-------------------------------------------------------------------------------------------------------------------
 void Core::ProcessSaveResults()
 {
     request_processed_++;
-
-    /*
-    log();
-    mongo::BSONObj keywords = mongo::BSONObjBuilder().
-    append("search", params->getSearch()).
-    append("context", params->getContext()).
-    obj();
+    mongo::DB db("log");
+    std::tm dt_tm;
+    dt_tm = boost::posix_time::to_tm(params->time_);
+    mongo::Date_t dt( (mktime(&dt_tm)) * 1000LLU);
+    std::string inf = params->params_["informer_id"];
+    long long inf_int = params->params_["informer_id_int"];
+    std::string ip = params->params_["ip"];
+    std::string cookie = params->params_["cookie"];
+    std::string country = params->params_["country"];
+    std::string region = params->params_["region"];
+    std::string request = params->params_["request"];
+    printf("%s\n","/////////////////////////////////////////////////////////////////////////");
+    bool garanted = !params->offers_.empty();
     try
     {
-        mongo::DB db("log");
-        std::tm dt_tm;
-        dt_tm = boost::posix_time::to_tm(params->time_);
-        mongo::Date_t dt( (mktime(&dt_tm)) * 1000LLU);
+        mongo::BSONObj record_block = mongo::BSONObjBuilder().genOID().
+                                    append("dt", dt).
+                                    append("inf", inf).
+                                    append("inf_int", inf_int).
+                                    append("ip", ip).
+                                    append("cookie", cookie).
+                                    append("garanted", garanted).
+                                    append("country", country).
+                                    append("region", region).
+                                    obj();
+        if (request == "initial")
+        {
+            db.insert(cfg->mongo_log_collection_block_, record_block, true);
+            printf("%s\n",params->offers_.dump().c_str());
+        }
+    }
+    catch (mongo::DBException &ex)
+    {
+        Log::err("DBException: insert into log db: %s", ex.what());
+    }
+
+    printf("%s\n","/////////////////////////////////////////////////////////////////////////");
+    /* 
+    mongo::BSONObj keywords = mongo::BSONObjBuilder().
+    append("search", params->string_param("search")).
+    append("context", params->string_param("context")).
+    obj();
 
         for(auto i = vResult.begin(); i != vResult.end(); ++i)
         {
@@ -97,9 +101,9 @@ void Core::ProcessSaveResults()
                                     append("id", (*i)->id).
                                     append("id_int",(long long)(*i)->id_int).
                                     append("title", (*i)->title).
-                                    append("inf", params->informer_id_).
-                                    append("inf_int", "").
-                                    append("ip", params->ip_).
+                                    append("inf", params->string_param("search")).
+                                    append("inf_int", params->long_param("search")).
+                                    append("ip", params->string_param("search")).
                                     append("cookie", params->cookie_id_).
                                     append("social", (*i)->social).
                                     append("token", (*i)->token).
@@ -110,8 +114,8 @@ void Core::ProcessSaveResults()
                                     append("campaignId_int", (long long)(*i)->campaign_id).
                                     append("campaignTitle", (*i)->campaign_title).
                                     append("project", (*i)->project).
-                                    append("country", (params->getCountry().empty()?"NOT FOUND":params->getCountry().c_str())).
-                                    append("region", (params->getRegion().empty()?"NOT FOUND":params->getRegion().c_str())).
+                                    append("country", (params->string_param("ip").empty()?"NOT FOUND":params->string_param("ip").c_str())).
+                                    append("region", (params->string_param("ip").empty()?"NOT FOUND":params->string_param("ip").c_str())).
                                     append("retargeting", (*i)->retargeting).
                                     append("keywords", keywords).
                                     append("branch", (*i)->getBranch()).
@@ -135,24 +139,5 @@ void Core::ProcessSaveResults()
         }
         bool garanted = (vResult.size() != 0);
         
-        mongo::BSONObj record_block = mongo::BSONObjBuilder().genOID().
-                                    append("dt", dt).
-                                    append("inf", params->informer_id_).
-                                    append("inf_int", "").
-                                    append("ip", params->ip_).
-                                    append("cookie", params->cookie_id_).
-                                    append("garanted", garanted).
-                                    append("country", (params->getCountry().empty()?"NOT FOUND":params->getCountry().c_str())).
-                                    append("region", (params->getRegion().empty()?"NOT FOUND":params->getRegion().c_str())).
-                                    obj();
-        db.insert(cfg->mongo_log_collection_block_, record_block, true);
-    }
-    catch (mongo::DBException &ex)
-    {
-        Log::err("DBException: insert into log db: %s", ex.what());
-    }
-
-    
-    vResult.clear();
     */
 }

@@ -373,7 +373,7 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
                     Log::err("Time %s taken: %lld \n", __func__,  microseconds);
                     Log::err("%s\n","------------------------------------------------------------------");
                 #endif // DEBUG
-                //core->ProcessSaveResults();
+                core->ProcessSaveResults();
             }
             catch (std::exception const &ex)
             {

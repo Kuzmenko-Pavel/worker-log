@@ -7,6 +7,7 @@
 
 #include "Offer.h"
 #include "Params.h"
+#include "json.h"
 
 
 /// Класс, который связывает воедино все части системы.
@@ -33,11 +34,7 @@ private:
     ///parameters to process: from http GET
     Params *params;
     ///return string
-    std::string retHtml;
-    ///result offers vector
-    Offer::Vector vResult;
-    /** \brief logging Core result in syslog */
-    void log();
+    nlohmann::json retJson;
 };
 
 #endif // CORE_H

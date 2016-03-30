@@ -14,12 +14,14 @@
 class Params
 {
 public:
-    std::string ip_;
     std::string cookie_id_;
     std::string post_;
     std::string get_;
     unsigned long long key_long_;
     boost::posix_time::ptime time_;
+    nlohmann::json offers_;
+    nlohmann::json informer_;
+    nlohmann::json params_;
 
     Params();
     Params &parse();
@@ -38,8 +40,6 @@ public:
 
 private:
     nlohmann::json json_; 
-    nlohmann::json offers_;
-    nlohmann::json params_;
 };
 
 #endif // PARAMS_H
