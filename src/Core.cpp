@@ -51,9 +51,11 @@ void Core::ProcessSaveResults()
 {
     request_processed_++;
     mongo::DB db("log");
-    std::tm dt_tm;
-    dt_tm = boost::posix_time::to_tm(params->time_);
-    mongo::Date_t dt( (mktime(&dt_tm)) * 1000LLU);
+    boost::posix_time::ptime time_ = boost::posix_time::second_clock::local_time();
+    boost::posix_time::ptime utime_ = boost::posix_time::second_clock::universal_time();
+    std::tm pt_tm = boost::posix_time::to_tm(time_ + (time_ - utime_));
+    std::time_t t = mktime(&pt_tm);
+    mongo::Date_t dt(t * 1000LLU);
     std::string inf = params->params_["informer_id"];
     long long inf_int = params->params_["informer_id_int"];
     std::string ip = params->params_["ip"];
@@ -78,66 +80,95 @@ void Core::ProcessSaveResults()
         if (request == "initial")
         {
             db.insert(cfg->mongo_log_collection_block_, record_block, true);
-            printf("%s\n",params->offers_.dump().c_str());
         }
     }
     catch (mongo::DBException &ex)
     {
         Log::err("DBException: insert into log db: %s", ex.what());
     }
-
-    printf("%s\n","/////////////////////////////////////////////////////////////////////////");
-    /* 
+    
+    std::string id;
+    long long id_int;
+    std::string campaign_guid;
+    long long campaign_id;
+    std::string account_id;
+    std::string campaign_title;
+    std::string title;
+    bool social;
+    std::string token;
+    std::string type = "teaser";
+    std::string project;
+    bool retargeting;
+    bool isOnClick = true;
+    std::string branch;
+    std::string conformity = "place";
+    std::string matching;
     mongo::BSONObj keywords = mongo::BSONObjBuilder().
-    append("search", params->string_param("search")).
-    append("context", params->string_param("context")).
+    append("search", "").
+    append("context", "").
     obj();
+    nlohmann::json offer;
 
-        for(auto i = vResult.begin(); i != vResult.end(); ++i)
+    if(garanted)
+    {
+        for (nlohmann::json::iterator it = params->offers_.begin(); it != params->offers_.end(); ++it)
         {
+                offer = *it;
+                printf("%s\n",offer.dump().c_str());
+                id = offer["guid"];
+                id_int = offer["id"];
+                campaign_guid = offer["campaign_guid"];
+                campaign_id = offer["campaign_id"];
+                account_id = offer["campaign_account"];
+                campaign_title = offer["campaign_title"];
+                title = offer["title"];
+                social = offer["campaign_social"];
+                token = offer["token"];
+                project = offer["campaign_project"];
+                retargeting = offer["retargeting"];
+                branch = offer["branch"];
+                mongo::BSONObj record = mongo::BSONObjBuilder().genOID().
+                                        append("dt", dt).
+                                        append("id", id).
+                                        append("id_int",id_int).
+                                        append("title", title).
+                                        append("inf", inf).
+                                        append("inf_int", inf_int).
+                                        append("ip", ip).
+                                        append("cookie", cookie).
+                                        append("social", social).
+                                        append("token", token).
+                                        append("type", type).
+                                        append("isOnClick", isOnClick).
+                                        append("campaignId", campaign_guid).
+                                        append("account_id", account_id).
+                                        append("campaignId_int", campaign_id).
+                                        append("campaignTitle", campaign_title).
+                                        append("project", project).
+                                        append("country", country).
+                                        append("region", region).
+                                        append("retargeting", retargeting).
+                                        append("keywords", keywords).
+                                        append("branch", branch).
+                                        append("conformity", "place").//(*i)->conformity).
+                                        append("matching", matching).
+                                        obj();
 
-            mongo::BSONObj record = mongo::BSONObjBuilder().genOID().
-                                    append("dt", dt).
-                                    append("id", (*i)->id).
-                                    append("id_int",(long long)(*i)->id_int).
-                                    append("title", (*i)->title).
-                                    append("inf", params->string_param("search")).
-                                    append("inf_int", params->long_param("search")).
-                                    append("ip", params->string_param("search")).
-                                    append("cookie", params->cookie_id_).
-                                    append("social", (*i)->social).
-                                    append("token", (*i)->token).
-                                    append("type", Offer::typeToString((*i)->type)).
-                                    append("isOnClick", (*i)->isOnClick).
-                                    append("campaignId", (*i)->campaign_guid).
-                                    append("account_id", (*i)->account_id).
-                                    append("campaignId_int", (long long)(*i)->campaign_id).
-                                    append("campaignTitle", (*i)->campaign_title).
-                                    append("project", (*i)->project).
-                                    append("country", (params->string_param("ip").empty()?"NOT FOUND":params->string_param("ip").c_str())).
-                                    append("region", (params->string_param("ip").empty()?"NOT FOUND":params->string_param("ip").c_str())).
-                                    append("retargeting", (*i)->retargeting).
-                                    append("keywords", keywords).
-                                    append("branch", (*i)->getBranch()).
-                                    append("conformity", "place").//(*i)->conformity).
-                                    append("matching", (*i)->matching).
-                                    obj();
-
-            db.insert(cfg->mongo_log_collection_impression_, record, true);
+                db.insert(cfg->mongo_log_collection_impression_, record, true);
 
 
-            if(!(*i)->retargeting)
-            {
-              offer_processed_++;
-            }
-            else
-            {
-              retargeting_processed_++;
-            }
+                if(!retargeting)
+                {
+                  offer_processed_++;
+                }
+                else
+                {
+                  retargeting_processed_++;
+                }
 
-            if ((*i)->social) social_processed_ ++;
+                if (social) social_processed_ ++;
+            
         }
-        bool garanted = (vResult.size() != 0);
-        
-    */
+    }
+    printf("%s\n","/////////////////////////////////////////////////////////////////////////");
 }
