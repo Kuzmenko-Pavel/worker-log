@@ -37,9 +37,11 @@ public:
     std::string getUserKey() const;
     unsigned long long getUserKeyLong() const;
     boost::posix_time::ptime getTime() const;
+    bool isTestMode() const;
 
 private:
     nlohmann::json json_; 
+    bool test_mode;
 };
 
 #endif // PARAMS_H

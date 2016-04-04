@@ -105,6 +105,10 @@ Params &Params::parse()
     {
         Log::err("exception %s: name: %s while create json informer", typeid(ex).name(), ex.what());
     }
+    if (params_.count("test") && params_["test"].is_boolean())
+    {
+        test_mode = params_["test"];
+    }
     return *this;
 }
 std::string Params::getCookieId() const
@@ -124,4 +128,8 @@ unsigned long long Params::getUserKeyLong() const
 boost::posix_time::ptime Params::getTime() const
 {
     return time_;
+}
+bool Params::isTestMode() const
+{
+    return test_mode;
 }
