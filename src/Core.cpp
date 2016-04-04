@@ -63,6 +63,7 @@ void Core::ProcessSaveResults()
     std::string country = params->params_["country"];
     std::string region = params->params_["region"];
     std::string request = params->params_["request"];
+    bool test = params->isTestMode();
     printf("%s\n","/////////////////////////////////////////////////////////////////////////");
     bool garanted = !params->offers_.empty();
     try
@@ -76,6 +77,7 @@ void Core::ProcessSaveResults()
                                     append("garanted", garanted).
                                     append("country", country).
                                     append("region", region).
+                                    append("test", test).
                                     obj();
         if (request == "initial")
         {
@@ -152,6 +154,7 @@ void Core::ProcessSaveResults()
                                         append("branch", branch).
                                         append("conformity", "place").//(*i)->conformity).
                                         append("matching", matching).
+                                        append("test", test).
                                         obj();
 
                 db.insert(cfg->mongo_log_collection_impression_, record, true);
