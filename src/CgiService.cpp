@@ -88,7 +88,9 @@ void CgiService::run()
 {
     for(;;)
     {
+        #ifdef DEBUG
         stat->cpuUsage();
+        #endif // DEBUG
         sleep(1);
     }
 }
