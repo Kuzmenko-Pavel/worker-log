@@ -328,23 +328,6 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
     url = new UrlParser(query);
     post = new UrlParser(postq);
 
-    if (url->param("show") == "status")
-    {
-        if( server_name.empty() && (tmp_str = FCGX_GetParam("SERVER_NAME", req->envp)) )
-        {
-            server_name = std::string(tmp_str);
-        }
-
-        Response(req, bcore->Status(server_name), "text/html","");
-        delete url;
-        delete post;
-        query.clear();
-        ip.clear();
-        script_name.clear();
-        cookie_value.clear();
-        postq.clear();
-        return;
-    }
     if (ajax)
     {
         try
@@ -402,7 +385,19 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
     }
     else
     {
-        Response(req, 200);
+        if (url->param("show") == "status")
+        {
+            if( server_name.empty() && (tmp_str = FCGX_GetParam("SERVER_NAME", req->envp)) )
+            {
+                server_name = std::string(tmp_str);
+            }
+
+            Response(req, bcore->Status(server_name), "text/html","");
+        }
+        else
+        {
+            Response(req, 200);
+        }
     }
     delete url;
     delete post;
@@ -411,6 +406,7 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
     script_name.clear();
     cookie_value.clear();
     postq.clear();
+    return;
 }
 
 void CgiService::SignalHandler(int signum)
