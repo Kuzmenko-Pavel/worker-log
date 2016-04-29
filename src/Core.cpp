@@ -155,6 +155,7 @@ void Core::ProcessSaveResults()
                                         append("conformity", "place").//(*i)->conformity).
                                         append("matching", matching).
                                         append("test", test).
+                                        append("request", request).
                                         obj();
 
                 db.insert(cfg->mongo_log_collection_impression_, record, true);
