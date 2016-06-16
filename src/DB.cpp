@@ -199,7 +199,6 @@ bool mongo::DB::ConnectLogDatabase()
             /** Подготовка базы данных MongoDB.*/
             mongo::DB db("log");
             db.createCollection("log.impressions", 700*1000000, true, 1000000);
-            db.createCollection("log.impressions.block", 700*1000000, true, 1000000);
         }
         catch (mongo::UserException &ex)
         {
