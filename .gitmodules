@@ -1,0 +1,3 @@
+[submodule "libs/fast_cgi"]
+	path = libs/fast_cgi
+	url = https://github.com/Kuzmenko-Pavel/FastCGI.git
