@@ -13,7 +13,7 @@
 
 #include "Config.h"
 #include "Core.h"
-#include "DB.h"
+//#include "DB.h"
 #include "base64.h"
 #include "json.h"
 
@@ -50,12 +50,12 @@ std::string Core::Process(Params *prms)
 void Core::ProcessSaveResults()
 {
     request_processed_++;
-    mongo::DB db("log");
+    //mongo::DB db("log");
     boost::posix_time::ptime time_ = boost::posix_time::second_clock::local_time();
     boost::posix_time::ptime utime_ = boost::posix_time::second_clock::universal_time();
     std::tm pt_tm = boost::posix_time::to_tm(time_ + (time_ - utime_));
     std::time_t t = mktime(&pt_tm);
-    mongo::Date_t dt(t * 1000LLU);
+    //mongo::Date_t dt(t * 1000LLU);
     std::string inf = params->params_["informer_id"];
     long long inf_int = params->params_["informer_id_int"];
     std::string ip = params->params_["ip"];
@@ -81,7 +81,7 @@ void Core::ProcessSaveResults()
     std::string branch;
     std::string conformity = "place";
     std::string matching;
-    mongo::BSONObj keywords = mongo::BSONObjBuilder().
+    //mongo::BSONObj keywords = mongo::BSONObjBuilder().
     append("search", "").
     append("context", "").
     obj();
@@ -102,36 +102,36 @@ void Core::ProcessSaveResults()
             project = offer["campaign_project"];
             retargeting = offer["retargeting"];
             branch = offer["branch"];
-            mongo::BSONObj record = mongo::BSONObjBuilder().genOID().
-                                    append("dt", dt).
-                                    append("id", id).
-                                    append("id_int",id_int).
-                                    append("title", title).
-                                    append("inf", inf).
-                                    append("inf_int", inf_int).
-                                    append("ip", ip).
-                                    append("cookie", cookie).
-                                    append("social", social).
-                                    append("token", token).
-                                    append("type", type).
-                                    append("isOnClick", isOnClick).
-                                    append("campaignId", campaign_guid).
-                                    append("account_id", account_id).
-                                    append("campaignId_int", campaign_id).
-                                    append("campaignTitle", campaign_title).
-                                    append("project", project).
-                                    append("country", country).
-                                    append("region", region).
-                                    append("retargeting", retargeting).
-                                    append("keywords", keywords).
-                                    append("branch", branch).
-                                    append("conformity", "place").//(*i)->conformity).
-                                    append("matching", matching).
-                                    append("test", test).
-                                    append("request", request).
-                                    obj();
-
-            db.insert(cfg->mongo_log_collection_impression_, record, true);
+//            mongo::BSONObj record = mongo::BSONObjBuilder().genOID().
+//                                    append("dt", dt).
+//                                    append("id", id).
+//                                    append("id_int",id_int).
+//                                    append("title", title).
+//                                    append("inf", inf).
+//                                    append("inf_int", inf_int).
+//                                    append("ip", ip).
+//                                    append("cookie", cookie).
+//                                    append("social", social).
+//                                    append("token", token).
+//                                    append("type", type).
+//                                    append("isOnClick", isOnClick).
+//                                    append("campaignId", campaign_guid).
+//                                    append("account_id", account_id).
+//                                    append("campaignId_int", campaign_id).
+//                                    append("campaignTitle", campaign_title).
+//                                    append("project", project).
+//                                    append("country", country).
+//                                    append("region", region).
+//                                    append("retargeting", retargeting).
+//                                    append("keywords", keywords).
+//                                    append("branch", branch).
+//                                    append("conformity", "place").//(*i)->conformity).
+//                                    append("matching", matching).
+//                                    append("test", test).
+//                                    append("request", request).
+//                                    obj();
+//
+//            db.insert(cfg->mongo_log_collection_impression_, record, true);
 
 
             if(!retargeting)

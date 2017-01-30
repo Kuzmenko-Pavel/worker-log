@@ -6,7 +6,7 @@
 #include <chrono>
 #include <string>
 
-#include "DB.h"
+//#include "DB.h"
 #include "Log.h"
 #include "CgiService.h"
 #include "UrlParser.h"
@@ -43,7 +43,7 @@ CgiService::CgiService()
 
     FCGX_Init();
 
-    mongo::DB::ConnectLogDatabase();
+    //mongo::DB::ConnectLogDatabase();
 
     mode_t old_mode = umask(0);
     socketId = FCGX_OpenSocket(cfg->server_socket_path_.c_str(), cfg->server_children_ * 4);

@@ -6,7 +6,6 @@ SRC_ALL=src/base64.cpp \
 		src/BaseCore.cpp \
 		src/main.cpp \
 		src/Server.cpp \
-		src/DB.cpp \
 		src/Offer.cpp \
 		src/CgiService.cpp \
 		src/EBranch.cpp \
@@ -17,6 +16,8 @@ SRC_ALL=src/base64.cpp \
 		src/GeoIPTools.cpp \
 		src/BoostHelpers.cpp \
 		src/CpuStat.cpp 
+
+#		src/DB.cpp \
 
 
 CMN_CPPFLAGS=-std=c++11 -Iinclude
