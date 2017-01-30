@@ -3,7 +3,7 @@ dnl Process this file with autoconf
 AC_INIT([worker-log], m4_esyscmd([echo -n $(git describe --all --tags --long | sed "s/v\([0-9]\.[0-9]-.*\)-.*/\1/")]), [kyzmenko.pavel@gmail.com])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_PROG_CXX
 AC_PROG_MAKE_SET
@@ -66,19 +66,19 @@ AS_HELP_STRING([--enable-debug],
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
 
-AC_CHECK_LIB([mongoclient],[main],[],[AC_MSG_ERROR([mongoclient(mongodb build with client shared library) missing])])
+#AC_CHECK_LIB([mongoclient],[main],[],[AC_MSG_ERROR([mongoclient(mongodb build with client shared library) missing])])
 
 AC_LANG(C++)
-SAVED_LDFLAGS=$LDFLAGS
-LDFLAGS="$SAVED_LDFLAGS -lmongoclient -lboost_system"
-AC_LINK_IFELSE(
-    [AC_LANG_PROGRAM([#include <mongo/client/connpool.h>],
-    [mongo::ScopedDbConnection *db;
-     db = mongo::ScopedDbConnection::getScopedDbConnection("", 0);])],
-     [],
-    [AC_DEFINE(MONGO_2_0,[],[mongoclient library old])])
-
-lDFLAGS=$SAVED_LDFLAGS
+#SAVED_LDFLAGS=$LDFLAGS
+#LDFLAGS="$SAVED_LDFLAGS -lmongoclient -lboost_system"
+#AC_LINK_IFELSE(
+#    [AC_LANG_PROGRAM([#include <mongo/client/connpool.h>],
+#    [mongo::ScopedDbConnection *db;
+#     db = mongo::ScopedDbConnection::getScopedDbConnection("", 0);])],
+#     [],
+#    [AC_DEFINE(MONGO_2_0,[],[mongoclient library old])])
+#
+#lDFLAGS=$SAVED_LDFLAGS
 
 
 AC_CHECK_LIB([icuuc],[u_tolower],[],[AC_MSG_WARN([icuuc library missing])])
