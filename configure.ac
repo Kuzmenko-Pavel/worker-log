@@ -65,6 +65,10 @@ AS_HELP_STRING([--enable-debug],
 		[debug=false])
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
+AC_CHECK_LIB([mongocxx],[main],[],[AC_MSG_WARN([mongocxx library missing])])
+AC_CHECK_LIB([fcgi], [FCGX_FPrintF], [], [AC_MSG_ERROR([fcgi was not found])])
+AC_CHECK_LIB([GeoIP], [GeoIP_region_name_by_code], [], [AC_MSG_ERROR([GeoIP was not found])])
+AC_CHECK_LIB([tinyxml], [main], [], [AC_MSG_ERROR([tinyxml was not found])])
 AC_CHECK_LIB([icuuc],[main],[],[AC_MSG_WARN([icuuc library missing])])
 AC_CHECK_LIB([icui18n],[main],[],[AC_MSG_ERROR([icui18n library missing])])
 AC_CHECK_LIB([icudata],[main],[],[AC_MSG_ERROR([icudata library missing])])
@@ -75,17 +79,9 @@ BOOST_THREADS()
 BOOST_DATE_TIME()
 BOOST_REGEX()
 
-AC_CHECK_LIB([libmongocxx],[main],[],[AC_MSG_WARN([libmongocxx library missing])])
-AC_CHECK_LIB([fcgi], [FCGX_FPrintF], [], [AC_MSG_ERROR([fcgi was not found])])
-AC_CHECK_LIB([GeoIP], [GeoIP_region_name_by_code], [], [AC_MSG_ERROR([GeoIP was not found])])
-AC_CHECK_LIB([tinyxml], [main], [], [AC_MSG_ERROR([tinyxml was not found])])
-
 CPPFLAGS="-W -Wall"
 
 AC_CONFIG_HEADERS([config.h])
 
-AC_CONFIG_FILES([
- Makefile
-])
-
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
