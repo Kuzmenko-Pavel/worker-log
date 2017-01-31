@@ -64,8 +64,9 @@ AS_HELP_STRING([--enable-debug],
 		esac],
 		[debug=false])
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
-
+PKG_CHECK_MODULES(MONGO, libmongocxx)
 AC_CHECK_LIB([mongocxx],[main],[],[AC_MSG_WARN([mongocxx library missing])])
+AC_CHECK_LIB([bsoncxx],[main],[],[AC_MSG_WARN([bsoncxx library missing])])
 AC_CHECK_LIB([fcgi], [FCGX_FPrintF], [], [AC_MSG_ERROR([fcgi was not found])])
 AC_CHECK_LIB([GeoIP], [GeoIP_region_name_by_code], [], [AC_MSG_ERROR([GeoIP was not found])])
 AC_CHECK_LIB([tinyxml], [main], [], [AC_MSG_ERROR([tinyxml was not found])])

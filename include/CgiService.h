@@ -2,7 +2,7 @@
 #define CGISERVICE_H
 
 #include <string>
-
+#include <mongocxx/client.hpp>
 #include "BaseCore.h"
 #include "Config.h"
 #include "CpuStat.h"
@@ -82,7 +82,7 @@ private:
      *                  FastCGI. Используется для построения ссылки на новую
      *                  порцию предложений.
      */
-    void ProcessRequest(FCGX_Request*, Core *);
+    void ProcessRequest(FCGX_Request*, Core *, mongocxx::client &client);
 private:
     std::string server_name;
     BaseCore *bcore;

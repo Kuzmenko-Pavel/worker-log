@@ -1,4 +1,6 @@
-[33mf7a5de9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmongocxx_3_1_x[m[33m, [m[1;31morigin/mongocxx_3_1_x[m[33m)[m add mongodb lib
+[33m0057cb1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmongocxx_3_1_x[m[33m, [m[1;31morigin/mongocxx_3_1_x[m[33m)[m add mongodb lib
+[33meb2ab7e[m update lib
+[33mf7a5de9[m add mongodb lib
 [33m7548d70[m update lib
 [33m0708e2a[m disabled old mongo
 [33m3251cd4[m library dependency fix
