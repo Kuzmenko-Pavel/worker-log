@@ -3,8 +3,10 @@
 #include <map>
 #include <chrono>
 #include <string>
+#include <signal.h>
+#include <fcgi_stdio.h>
 
-//#include "DB.h"
+#include "DB.h"
 #include "Log.h"
 #include "CgiService.h"
 #include "UrlParser.h"
@@ -13,9 +15,6 @@
 #include "Core.h"
 #include "Cookie.h"
 #include "Server.h"
-#include <signal.h>
-
-#include <fcgi_stdio.h>
 #include "../config.h"
 
 #define THREAD_STACK_SIZE PTHREAD_STACK_MIN + 10 * 1024
@@ -40,8 +39,6 @@ CgiService::CgiService()
     stat = new CpuStat();
 
     FCGX_Init();
-
-    //mongo::DB::ConnectLogDatabase();
 
     mode_t old_mode = umask(0);
     socketId = FCGX_OpenSocket(cfg->server_socket_path_.c_str(), cfg->server_children_ * 4);

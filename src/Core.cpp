@@ -4,16 +4,13 @@
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <map>
-
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
-
 #include "../config.h"
-
 #include "Config.h"
 #include "Core.h"
-//#include "DB.h"
+#include "DB.h"
 #include "base64.h"
 #include "json.h"
 
@@ -50,7 +47,6 @@ std::string Core::Process(Params *prms)
 void Core::ProcessSaveResults()
 {
     request_processed_++;
-    //mongo::DB db("log");
     boost::posix_time::ptime time_ = boost::posix_time::second_clock::local_time();
     boost::posix_time::ptime utime_ = boost::posix_time::second_clock::universal_time();
     std::tm pt_tm = boost::posix_time::to_tm(time_ + (time_ - utime_));
