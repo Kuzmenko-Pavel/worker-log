@@ -65,23 +65,6 @@ AS_HELP_STRING([--enable-debug],
 		[debug=false])
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
-
-#AC_CHECK_LIB([mongoclient],[main],[],[AC_MSG_ERROR([mongoclient(mongodb build with client shared library) missing])])
-
-AC_LANG(C++)
-#SAVED_LDFLAGS=$LDFLAGS
-#LDFLAGS="$SAVED_LDFLAGS -lmongoclient -lboost_system"
-#AC_LINK_IFELSE(
-#    [AC_LANG_PROGRAM([#include <mongo/client/connpool.h>],
-#    [mongo::ScopedDbConnection *db;
-#     db = mongo::ScopedDbConnection::getScopedDbConnection("", 0);])],
-#     [],
-#    [AC_DEFINE(MONGO_2_0,[],[mongoclient library old])])
-#
-#lDFLAGS=$SAVED_LDFLAGS
-
-
-
 AC_CHECK_LIB([icuuc],[main],[],[AC_MSG_WARN([icuuc library missing])])
 AC_CHECK_LIB([icui18n],[main],[],[AC_MSG_ERROR([icui18n library missing])])
 AC_CHECK_LIB([icudata],[main],[],[AC_MSG_ERROR([icudata library missing])])
@@ -92,6 +75,7 @@ BOOST_THREADS()
 BOOST_DATE_TIME()
 BOOST_REGEX()
 
+AC_CHECK_LIB([libmongocxx],[main],[],[AC_MSG_WARN([libmongocxx library missing])])
 AC_CHECK_LIB([fcgi], [FCGX_FPrintF], [], [AC_MSG_ERROR([fcgi was not found])])
 AC_CHECK_LIB([GeoIP], [GeoIP_region_name_by_code], [], [AC_MSG_ERROR([GeoIP was not found])])
 AC_CHECK_LIB([tinyxml], [main], [], [AC_MSG_ERROR([tinyxml was not found])])
