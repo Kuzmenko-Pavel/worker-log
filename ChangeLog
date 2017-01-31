@@ -1,4 +1,6 @@
-[33m22a36a9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmongocxx_3_1_x[m[33m, [m[1;31morigin/mongocxx_3_1_x[m[33m)[m add FastCgi submodule
+[33m0708e2a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmongocxx_3_1_x[m[33m, [m[1;31morigin/mongocxx_3_1_x[m[33m)[m disabled old mongo
+[33m3251cd4[m library dependency fix
+[33m22a36a9[m add FastCgi submodule
 [33m031f69b[m --
 [33m0265dce[m init new mongo driver branch
 [33md4dec29[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m Merge branch 'master' of github.com:Kuzmenko-Pavel/worker-log

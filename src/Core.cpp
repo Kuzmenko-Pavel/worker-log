@@ -82,9 +82,9 @@ void Core::ProcessSaveResults()
     std::string conformity = "place";
     std::string matching;
     //mongo::BSONObj keywords = mongo::BSONObjBuilder().
-    append("search", "").
-    append("context", "").
-    obj();
+    //append("search", "").
+    //append("context", "").
+    //obj();
     nlohmann::json offer;
     for (nlohmann::json::iterator it = params->offers_.begin(); it != params->offers_.end(); ++it)
     {

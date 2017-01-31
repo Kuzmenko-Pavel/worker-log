@@ -5,9 +5,9 @@ AC_INIT([worker-log], m4_esyscmd([echo -n $(git describe --all --tags --long | s
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([subdir-objects])
 
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 
 AC_LANG_CPLUSPLUS
 
@@ -81,11 +81,12 @@ AC_LANG(C++)
 #lDFLAGS=$SAVED_LDFLAGS
 
 
-AC_CHECK_LIB([icuuc],[u_tolower],[],[AC_MSG_WARN([icuuc library missing])])
+
+AC_CHECK_LIB([icuuc],[main],[],[AC_MSG_WARN([icuuc library missing])])
 AC_CHECK_LIB([icui18n],[main],[],[AC_MSG_ERROR([icui18n library missing])])
 AC_CHECK_LIB([icudata],[main],[],[AC_MSG_ERROR([icudata library missing])])
 
-BOOST_REQUIRE([1.48],AC_MSG_ERROR([boost>=1.48 required]))
+BOOST_REQUIRE([1.58],AC_MSG_ERROR([boost>=1.58 required]))
 BOOST_FILESYSTEM()
 BOOST_THREADS()
 BOOST_DATE_TIME()

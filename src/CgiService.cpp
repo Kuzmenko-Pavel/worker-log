@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/regex.hpp>
-#include <boost/regex/icu.hpp>
 #include <map>
 #include <chrono>
 #include <string>
@@ -219,8 +217,6 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core)
     char *tmp_str = nullptr;
     std::string query, ip, script_name, cookie_value, postq, xhr;
     bool ajax = false;
-    boost::u32regex replaceSymbol;
-
 
     if (!(tmp_str = FCGX_GetParam("QUERY_STRING", req->envp)))
     {

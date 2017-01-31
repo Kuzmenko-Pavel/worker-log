@@ -1,5 +1,4 @@
 #include <sstream>
-
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
@@ -26,7 +25,6 @@ std::string time_t_to_string(time_t t)
     sstr << t;
     return sstr.str();
 }
-
 
 Params &Params::cookie_id(const std::string &cookie_id)
 {
