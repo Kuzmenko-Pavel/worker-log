@@ -33,11 +33,9 @@ worker_log_CPPFLAGS=$(CMN_CPPFLAGS)
 worker_log_LDADD=$(CMN_LDADD)
 endif
 
-
 if DEBUG
-AM_CFLAGS = -g -DDEBUG -Wall -pipe
-AM_CXXFLAGS = -g -DDEBUG -Wall -pipe
+AM_CXXFLAGS = -ggdb3 -DDEBUG -Wall -pipe
 else
-AM_CFLAGS = -m64 -Ofast -march=native -funroll-loops -pipe
-AM_CXXFLAGS = -m64 -Ofast -march=native -funroll-loops -pipe
+AM_CXXFLAGS = -m64 -Os -march=native -pipe
 endif
+
