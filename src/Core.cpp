@@ -1,19 +1,16 @@
+#include <bsoncxx/json.hpp>
 #include <boost/foreach.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <map>
-
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
-
 #include "../config.h"
-
 #include "Config.h"
 #include "Core.h"
-#include "DB.h"
 #include "base64.h"
 #include "json.h"
 
@@ -47,17 +44,15 @@ std::string Core::Process(Params *prms)
     return retJson.dump();
 }
 //-------------------------------------------------------------------------------------------------------------------
-void Core::ProcessSaveResults()
+void Core::ProcessSaveResults(mongocxx::client &client)
 {
     request_processed_++;
-    mongo::DB db("log");
     boost::posix_time::ptime time_ = boost::posix_time::second_clock::local_time();
     boost::posix_time::ptime utime_ = boost::posix_time::second_clock::universal_time();
     std::tm pt_tm = boost::posix_time::to_tm(time_ + (time_ - utime_));
-    std::time_t t = mktime(&pt_tm);
-    mongo::Date_t dt(t * 1000LLU);
+    std::time_t time = mktime(&pt_tm);
     std::string inf = params->params_["informer_id"];
-    long long inf_int = params->params_["informer_id_int"];
+    long inf_int = params->params_["informer_id_int"];
     std::string ip = params->params_["ip"];
     std::string cookie = params->params_["cookie"];
     std::string country = params->params_["country"];
@@ -65,76 +60,41 @@ void Core::ProcessSaveResults()
     std::string request = params->params_["request"];
     bool test = params->isTestMode();
     printf("%s\n","/////////////////////////////////////////////////////////////////////////");
-    std::string id;
-    long long id_int;
-    std::string campaign_guid;
-    long long campaign_id;
-    std::string account_id;
-    std::string campaign_title;
-    std::string title;
-    bool social;
-    std::string token;
-    std::string type = "teaser";
-    std::string project;
-    bool retargeting;
-    bool isOnClick = true;
-    std::string branch;
-    std::string conformity = "place";
-    std::string matching;
-    mongo::BSONObj keywords = mongo::BSONObjBuilder().
-    append("search", "").
-    append("context", "").
-    obj();
-    nlohmann::json offer;
+    std::vector<bsoncxx::document::value> documents;
     for (nlohmann::json::iterator it = params->offers_.begin(); it != params->offers_.end(); ++it)
     {
-            offer = *it;
-            printf("%s\n",offer.dump().c_str());
-            id = offer["guid"];
-            id_int = offer["id"];
-            campaign_guid = offer["campaign_guid"];
-            campaign_id = offer["campaign_id"];
-            account_id = offer["campaign_account"];
-            campaign_title = offer["campaign_title"];
-            title = offer["title"];
-            social = offer["campaign_social"];
-            token = offer["token"];
-            project = offer["campaign_project"];
-            retargeting = offer["retargeting"];
-            branch = offer["branch"];
-            mongo::BSONObj record = mongo::BSONObjBuilder().genOID().
-                                    append("dt", dt).
-                                    append("id", id).
-                                    append("id_int",id_int).
-                                    append("title", title).
-                                    append("inf", inf).
-                                    append("inf_int", inf_int).
-                                    append("ip", ip).
-                                    append("cookie", cookie).
-                                    append("social", social).
-                                    append("token", token).
-                                    append("type", type).
-                                    append("isOnClick", isOnClick).
-                                    append("campaignId", campaign_guid).
-                                    append("account_id", account_id).
-                                    append("campaignId_int", campaign_id).
-                                    append("campaignTitle", campaign_title).
-                                    append("project", project).
-                                    append("country", country).
-                                    append("region", region).
-                                    append("retargeting", retargeting).
-                                    append("keywords", keywords).
-                                    append("branch", branch).
-                                    append("conformity", "place").//(*i)->conformity).
-                                    append("matching", matching).
-                                    append("test", test).
-                                    append("request", request).
-                                    obj();
+            documents.push_back(bsoncxx::builder::stream::document{} << "dt" << time 
+				<< "id" << (*it)["guid"].get<std::string>()
+				<< "id_int" << (*it)["id"].get<long>()
+				<< "title" << (*it)["title"].get<std::string>()
+				<< "inf" << inf
+				<< "inf_int" << inf_int 
+				<< "ip" << ip
+				<< "cookie" << cookie
+				<< "social" << (*it)["campaign_social"].get<bool>()
+				<< "token" << (*it)["token"].get<std::string>()
+				<< "type" << "teaser"
+				<< "isOnClick" << true
+				<< "campaignId" << (*it)["campaign_guid"].get<std::string>()
+				<< "account_id" << (*it)["campaign_account"].get<std::string>()
+				<< "campaignId_int" << (*it)["campaign_id"].get<long>()
+				<< "campaignTitle" << (*it)["campaign_title"].get<std::string>()
+				<< "project" << (*it)["campaign_project"].get<std::string>()
+				<< "country" << country
+				<< "region" << region
+				<< "retargeting" << (*it)["retargeting"].get<std::string>()
+				<< "keywords" << bsoncxx::builder::stream::open_document
+ 				<< "search" << ""
+                                << "context" << ""
+				<< bsoncxx::builder::stream::close_document
+				<< "branch" << (*it)["branch"].get<std::string>()
+				<< "conformity" << "place"
+				<< "matching" << ""
+				<< "test" << test
+				<< "request" << request
+				<< bsoncxx::builder::stream::finalize);
 
-            db.insert(cfg->mongo_log_collection_impression_, record, true);
-
-
-            if(!retargeting)
+            if(!(*it)["retargeting"])
             {
               offer_processed_++;
             }
@@ -143,8 +103,9 @@ void Core::ProcessSaveResults()
               retargeting_processed_++;
             }
 
-            if (social) social_processed_ ++;
+            if ((*it)["campaign_social"]) social_processed_ ++;
             
-    }
+    } 
+    client[cfg->mongo_log_db_][cfg->mongo_log_collection_impression_].insert_many(documents);
     printf("%s\n","/////////////////////////////////////////////////////////////////////////");
 }

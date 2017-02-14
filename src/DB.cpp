@@ -1,47 +1,32 @@
 #include "DB.h"
 #include "Config.h"
 
-mongo::DB::ConnectionOptionsMap mongo::DB::connection_options_map_;
+mongocxx::DB::ConnectionOptionsMap mongocxx::DB::connection_options_map_;
 
-mongo::DB::DB(const std::string &name) :
-    socketTimeout(0.0),
-    db_( 0 )
+mongocxx::DB::DB(const std::string &name)
 {
     options_ = options_by_name(name);
-    if (!options_)
+    if (!options_){
         throw NotRegistered("Database " +
                             (name.empty()? "(default)" : name) +
                             " is not registered! Use addDatabase() first.");
-#ifdef MONGO_2_0
+	}
     if (options_->replica_set.empty())
-        db_ = new ScopedDbConnection(options_->server_host, socketTimeout);
+    {
+    	db_ = new mongocxx::pool(mongocxx::uri{});
+    }
     else
     {
-        db_ = new ScopedDbConnection(
-            mongo::ConnectionString(mongo::ConnectionString::SET,
-                                    options_->server_host,
-                                    options_->replica_set), socketTimeout);
+    	db_ = new mongocxx::pool(mongocxx::uri{});
     }
-#else
-    if (options_->replica_set.empty())
-        db_ = ScopedDbConnection::getScopedDbConnection(options_->server_host, socketTimeout);
-    else
-    {
-        db_ = ScopedDbConnection::getScopedDbConnection(
-                  mongo::ConnectionString(mongo::ConnectionString::SET,
-                                          options_->server_host,
-                                          options_->replica_set), socketTimeout);
-    }
-#endif // MONGO_2
 }
 
-mongo::DB::~DB()
+mongocxx::DB::~DB()
 {
-    db_->done();
     delete db_;
 }
 
-void mongo::DB::addDatabase(const std::string &name,
+void mongocxx::DB::addDatabase(const std::string &name,
                             const std::string &server_host,
                             const std::string &database,
                             bool slave_ok)
@@ -51,7 +36,7 @@ void mongo::DB::addDatabase(const std::string &name,
 
 /** Регистрирует подключение \a name к набору реплик баз данных
 (Replica Set). */
-void mongo::DB::addDatabase(const std::string &name,
+void mongocxx::DB::addDatabase(const std::string &name,
                             const ReplicaSetConnection &connection_string,
                             const std::string &database,
                             bool slave_ok)
@@ -61,7 +46,7 @@ void mongo::DB::addDatabase(const std::string &name,
 }
 
 /** Регистрирует базу данных "по умолчанию". */
-void mongo::DB::addDatabase(const std::string &server_host,
+void mongocxx::DB::addDatabase(const std::string &server_host,
                             const std::string &database,
                             bool slave_ok)
 {
@@ -70,39 +55,32 @@ void mongo::DB::addDatabase(const std::string &server_host,
 
 /** Регистрирует базу данных "по умолчанию", подключение осуществляется
 к набору реплик (Replica Set). */
-void mongo::DB::addDatabase(const ReplicaSetConnection &connection_string,
+void mongocxx::DB::addDatabase(const ReplicaSetConnection &connection_string,
                             const std::string &database, bool slave_ok)
 {
     _addDatabase("", connection_string.connection_string(), database,
                  connection_string.replica_set(), slave_ok);
 }
-
-/** Возвращает полное название коллекции */
-std::string mongo::DB::collection(const std::string &collection)
-{
-    return database() +  "." + collection;
-}
-
 /** Название используемой базы данных */
-std::string &mongo::DB::database()
+std::string &mongocxx::DB::database()
 {
     return options_->database;
 }
 
 /** Адрес сервера MongoDB */
-std::string &mongo::DB::server_host()
+std::string &mongocxx::DB::server_host()
 {
     return options_->server_host;
 }
 
 /** Название набора реплик (replica set) */
-std::string &mongo::DB::replica_set()
+std::string &mongocxx::DB::replica_set()
 {
     return options_->replica_set;
 }
 
 /** Возвращает true, если допускается read-only подключение к slave серверу в кластере */
-bool mongo::DB::slave_ok()
+bool mongocxx::DB::slave_ok()
 {
     return options_->slave_ok;
 }
@@ -110,35 +88,14 @@ bool mongo::DB::slave_ok()
 /** Возвращает соединение к базе данных.
 Может использоваться для операций, не предусмотренных обёрткой.
  */
-mongo::ScopedDbConnection &mongo::DB::db()
+mongocxx::database mongocxx::DB::db(const std::string &name)
 {
-    return *db_;
+    auto c = (*db_).acquire();
+    return (*c)['s'];
 }
 
-// Все нижеследующие методы являются просто обёртками над методами
-// DBClientConnection, принимающие вместо параметра ns (namespace)
-// параметр coll (collection) и автоматически добавляющие к названию
-// коллекции имя базы данных.
-//
-// Некоторые методы (insert, update, remove) принимают также
-// дополнительный параметр safe, который, если равен true, заставляет
-// ждать ответа от базы данных, таким образом гарантируя выполнение
-// операции (особенность mongodb в асинхронном выполнении команд,
-// т.е. по умолчанию метод завершится сразу, а реальное изменение
-// данных может произойти позже)
-//
-// Если при создании подключения был указан параметр slave_ok = true,
-// то функции чтения (query, findOne, count) всегда будут устанавливать
-// бит QueryOption_SlaveOk.
 
-void mongo::DB::insert( const std::string &coll, BSONObj obj, bool safe )
-{
-    (*db_)->insert(this->collection(coll), obj);
-    if (safe)
-        (*db_)->getLastError();
-}
-
-mongo::DB::ConnectionOptions *mongo::DB::options_by_name(const std::string &name)
+mongocxx::DB::ConnectionOptions *mongocxx::DB::options_by_name(const std::string &name)
 {
     ConnectionOptionsMap::const_iterator it =
         connection_options_map_.find(name);
@@ -149,7 +106,7 @@ mongo::DB::ConnectionOptions *mongo::DB::options_by_name(const std::string &name
 }
 
 /** Добавляет настройки подключения */
-void mongo::DB::_addDatabase(const std::string &name,
+void mongocxx::DB::_addDatabase(const std::string &name,
                              const std::string &server_host,
                              const std::string &database,
                              const std::string &replica_set,
@@ -175,7 +132,7 @@ void mongo::DB::_addDatabase(const std::string &name,
  *
  * Настройки читаются конструктором класса из переменных окружения среды.*/
 
-bool mongo::DB::ConnectLogDatabase()
+bool mongocxx::DB::ConnectLogDatabase()
 {
 
     for(auto h = cfg->mongo_log_host_.begin(); h != cfg->mongo_log_host_.end(); ++h)
@@ -184,23 +141,24 @@ bool mongo::DB::ConnectLogDatabase()
         try
         {
             if (cfg->mongo_log_set_.empty())
-                mongo::DB::addDatabase( "log",
+                mongocxx::DB::addDatabase( "log",
                                         *h,
                                         cfg->mongo_log_db_,
                                         cfg->mongo_log_slave_ok_);
             else
-                mongo::DB::addDatabase( "log",
-                                        mongo::DB::ReplicaSetConnection(
+                mongocxx::DB::addDatabase( "log",
+                                        mongocxx::DB::ReplicaSetConnection(
                                             cfg->mongo_log_set_,
                                             *h),
                                         cfg->mongo_log_db_,
                                         cfg->mongo_log_slave_ok_);
 
             /** Подготовка базы данных MongoDB.*/
-            mongo::DB db("log");
-            db.createCollection("log.impressions", 700*1000000, true, 1000000);
+            //mongocxx::DB POOL("log");
+            //mongocxx::database &cl = POOL.db("log");
+            //db.createCollection("log.impressions", 700*1000000, true, 1000000);
         }
-        catch (mongo::UserException &ex)
+        catch (std::exception const &ex)
         {
             Log::err("Error connecting to mongo: %s", ex.what());
         }
@@ -208,4 +166,3 @@ bool mongo::DB::ConnectLogDatabase()
 
     return true;
 }
-

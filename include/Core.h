@@ -4,6 +4,7 @@
 #include <set>
 
 #include <boost/date_time.hpp>
+#include <mongocxx/client.hpp>
 
 #include "Offer.h"
 #include "Params.h"
@@ -23,7 +24,7 @@ public:
      */
     std::string Process(Params *params);
     /** \brief save process results to mongodb log */
-    void ProcessSaveResults();
+    void ProcessSaveResults(mongocxx::client &client);
 
 private:
     boost::posix_time::ptime

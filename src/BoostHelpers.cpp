@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <iostream>
 #include <fcntl.h>
 
 #include <boost/filesystem.hpp>

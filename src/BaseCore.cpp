@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include <mongo/util/net/hostandport.h>
+//#include <mongo/util/net/hostandport.h>
 
 #include "../config.h"
 
@@ -88,12 +88,11 @@ std::string BaseCore::Status(const std::string &server_name)
     out << "<tr><td>CPU sys: </td> <td>" << CpuStat::cpu_sys << "</td></tr>";
     out << "<tr><td>RAM: </td> <td>" << CpuStat::rss << "</td></tr>";
     out << "<tr><td>База данных журналирования: </td> <td>" << cfg->mongo_log_db_;
-    out << "</br>slave_ok = " << (cfg->mongo_log_slave_ok_? "true" : "false");
     out << "</br>replica set = ";
-    if (cfg->mongo_log_set_.empty())
+    if (cfg->mongo_log_url_.empty())
         out << " no ";
     else
-        out << cfg->mongo_log_set_;
+        out << cfg->mongo_log_url_;
     out << "</td></tr>";
     out << "</table>";
     out << "</body>";
