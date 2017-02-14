@@ -16,12 +16,8 @@ extern unsigned long retargeting_processed_;
 class Config
 {
 public:
-    std::vector<std::string> mongo_log_host_;
     std::string mongo_log_db_;
-    std::string mongo_log_set_;
-    bool mongo_log_slave_ok_;
-    std::string mongo_log_login_;
-    std::string mongo_log_passwd_;
+    std::string mongo_log_url_;
     std::string mongo_log_collection_impression_;
     std::string mongo_log_collection_block_;
 
@@ -46,18 +42,12 @@ public:
 
     bool logCoreTime, logOutPutSize, logIP, logCountry, logRegion, logCookie,
         logContext, logSearch, logInformerId, logLocation,
-        //retargeting offer ids from redis
-        logRetargetingOfferIds,
-        //output offer ids
-        logOutPutOfferIds,
-        logSphinx,
-        logMonitor, logMQ, logRedis
+        logMonitor
         ;
     bool toLog()
     {
         return logCoreTime || logOutPutSize || logIP || logCountry || logRegion || logCookie
-        || logContext || logSearch || logInformerId || logLocation || logRetargetingOfferIds
-        || logOutPutOfferIds || logSphinx;
+        || logContext || logSearch || logInformerId || logLocation;
     }
 
     std::map<unsigned,std::string> Categories;
@@ -92,7 +82,6 @@ private:
 
     int getTime(const char *p);
     std::string getFileContents(const std::string &fileName);
-    void redisHostAndPort(TiXmlElement *p, std::string &host, std::string &port, unsigned&);
     void exit(const std::string &mes);
     bool checkPath(const std::string &path_, bool checkWrite, bool isFile, std::string &mes);
 };

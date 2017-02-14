@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <fcgi_stdio.h>
 #include <mongocxx/pool.hpp>
+#include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/options/create_collection.hpp>
 
@@ -43,17 +44,7 @@ CgiService::CgiService()
 
     FCGX_Init();
 
-    mongocxx::pool pool{mongocxx::uri{}};
-    mongocxx::pool::entry e = pool.acquire();
-    mongocxx::database db = (*e)["log"];
-    if(!db.has_collection(cfg->mongo_log_collection_impression_))
-    {
-	auto options = mongocxx::options::create_collection();
-	options.capped(true);
-	options.max(1000000);
-	options.size(700*1000000);
-	db.create_collection(cfg->mongo_log_collection_impression_, options);
-    }
+    CheckLogDatabase();
 
     mode_t old_mode = umask(0);
     socketId = FCGX_OpenSocket(cfg->server_socket_path_.c_str(), cfg->server_children_ * 4);
@@ -171,7 +162,7 @@ void *CgiService::Serve(void *data)
     CgiService *csrv = (CgiService*)data;
 
     Core *core = new Core();
-    mongocxx::pool pool{mongocxx::uri{}};
+    mongocxx::pool pool{mongocxx::uri{cfg->mongo_log_url_}};
     int count_req = 0;
 
     FCGX_Request request;
@@ -416,6 +407,21 @@ void CgiService::ProcessRequest(FCGX_Request *req, Core *core, mongocxx::client 
     cookie_value.clear();
     postq.clear();
     return;
+}
+
+void CgiService::CheckLogDatabase()
+{
+    mongocxx::client conn{mongocxx::uri{cfg->mongo_log_url_}};
+    auto db = conn[cfg->mongo_log_db_];
+
+    if(!db.has_collection(cfg->mongo_log_collection_impression_))
+    {
+        auto options = mongocxx::options::create_collection();
+        options.capped(true);
+        options.max(1000000);
+        options.size(700*1000000);
+        db.create_collection(cfg->mongo_log_collection_impression_, options);
+    }
 }
 
 void CgiService::SignalHandler(int signum)

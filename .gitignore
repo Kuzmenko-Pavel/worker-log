@@ -102,4 +102,4 @@ Makefile.in
 *.dSYM/
 
 
-worker-log-dev
+worker-campaign-dev

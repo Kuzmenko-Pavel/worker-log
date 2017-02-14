@@ -91,27 +91,13 @@ bool Config::Load()
     {
         if( (mel = mels->FirstChildElement("log")) )
         {
-            for(mElem = mel->FirstChildElement("host"); mElem; mElem = mElem->NextSiblingElement("host"))
-            {
-                mongo_log_host_.push_back(mElem->GetText());
-            }
-
             if( (mElem = mel->FirstChildElement("db")) && (mElem->GetText()) )
             {
                 mongo_log_db_ = mElem->GetText();
             }
 
-            if( (mElem = mel->FirstChildElement("set")) && (mElem->GetText()) )
-                mongo_log_set_ = mElem->GetText();
-
-            if( (mElem = mel->FirstChildElement("slave")) && (mElem->GetText()) )
-                mongo_log_slave_ok_ = strncmp(mElem->GetText(),"1",1)>=0 ? true : false;
-
-            if( (mElem = mel->FirstChildElement("login")) && (mElem->GetText()) )
-                mongo_log_login_ = mElem->GetText();
-
-            if( (mElem = mel->FirstChildElement("passwd")) && (mElem->GetText()) )
-                mongo_log_passwd_ = mElem->GetText();
+            if( (mElem = mel->FirstChildElement("url")) && (mElem->GetText()) )
+                mongo_log_url_ = mElem->GetText();
 
             if( (mElem = mel->FirstChildElement("collection_impression")) && (mElem->GetText()) )
                 mongo_log_collection_impression_ = mElem->GetText();
@@ -292,21 +278,6 @@ bool Config::Load()
             logLocation = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
         }
 
-        if( (mel = mElem->FirstChildElement("sphinx")) && (mel->GetText()) )
-        {
-            logSphinx = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
-        }
-
-        if( (mel = mElem->FirstChildElement("RetargetingOfferIds")) && (mel->GetText()) )
-        {
-            logRetargetingOfferIds = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
-        }
-
-        if( (mel = mElem->FirstChildElement("OutPutOfferIds")) && (mel->GetText()) )
-        {
-            logOutPutOfferIds = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
-        }
-
         if( (mel = mElem->FirstChildElement("monitor")) && (mel->GetText()) )
         {
             logMonitor = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
@@ -316,22 +287,12 @@ bool Config::Load()
         {
             logMonitor = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
         }
-        if( (mel = mElem->FirstChildElement("redis")) && (mel->GetText()) )
-        {
-            logRedis = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
-        }
-        if( (mel = mElem->FirstChildElement("logMQ")) && (mel->GetText()) )
-        {
-            logMQ = strncmp(mel->GetText(),"1",1)>=0 ? true : false;
-        }
     }
     else
     {
         logCoreTime = logOutPutSize = logIP = true;
-
-        logSphinx = logOutPutOfferIds = logRetargetingOfferIds =
         logLocation = logInformerId = logSearch =
-        logContext = logCookie = logCountry = logRegion = logMonitor = logMQ = logRedis = false;
+        logContext = logCookie = logCountry = logRegion = logMonitor = false;
 
         std::clog<<"using default log mode: CoreTime OutPutSize IP"<<std::endl;
     }

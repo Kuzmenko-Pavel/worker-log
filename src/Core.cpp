@@ -106,6 +106,6 @@ void Core::ProcessSaveResults(mongocxx::client &client)
             if ((*it)["campaign_social"]) social_processed_ ++;
             
     } 
-    client["log"][cfg->mongo_log_collection_impression_].insert_many(documents);
+    client[cfg->mongo_log_db_][cfg->mongo_log_collection_impression_].insert_many(documents);
     printf("%s\n","/////////////////////////////////////////////////////////////////////////");
 }
