@@ -40,7 +40,7 @@ public:
     std::string group_;
     int time_update_;
 
-    bool logCoreTime, , logIP, logCountry, logRegion, logCookie,
+    bool logCoreTime, logOutPutSize, logIP, logCountry, logRegion, logCookie,
         logContext, logSearch, logInformerId, logLocation,
         logMonitor
         ;
