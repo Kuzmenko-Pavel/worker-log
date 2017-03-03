@@ -290,7 +290,7 @@ bool Config::Load()
     }
     else
     {
-        logCoreTime = logOutPutSize = logIP = true;
+        logCoreTime = logOutPutSize = logIP = false;
         logLocation = logInformerId = logSearch =
         logContext = logCookie = logCountry = logRegion = logMonitor = false;
 

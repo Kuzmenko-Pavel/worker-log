@@ -1,10 +1,10 @@
 #ifndef CORE_H
 #define CORE_H
 
+#include <mongocxx/client.hpp>
 #include <set>
 
 #include <boost/date_time.hpp>
-#include <mongocxx/client.hpp>
 
 #include "Offer.h"
 #include "Params.h"

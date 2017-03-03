@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <signal.h>
+#include <mongocxx/instance.hpp>
 #include "CgiService.h"
 #include "Log.h"
 #include "Server.h"
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
 
     cfg = Config::Instance();
     cfg->LoadConfig(config);
+    mongocxx::instance inst{};
 
     if(fTestConfig)
     {

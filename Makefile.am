@@ -34,8 +34,8 @@ worker_log_LDADD=$(CMN_LDADD)
 endif
 
 if DEBUG
-AM_CXXFLAGS = -ggdb3 -DDEBUG -Wall -pipe
+AM_CXXFLAGS = --std=c++11 -ggdb3 -DDEBUG -Wall -pipe -D_REENTRANT
 else
-AM_CXXFLAGS = -m64 -Os -march=native -pipe
+AM_CXXFLAGS = --std=c++11 -m64 -Os -march=native -pipe -D_REENTRANT
 endif
 

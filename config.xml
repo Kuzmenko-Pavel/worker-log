@@ -9,12 +9,12 @@
     <user>www-data</user>
     <group>www-data</group>
     <!--путь к файлу сокета-->
-    <socket_path>/run/workerd/sockl</socket_path>
+    <socket_path>/run/worker-log/sock</socket_path>
     <!--количество ниток-->
     <children>1</children>
 
     <!--путь к очереди сообщений-->
-    <mq_path>guest:guest@localhost//</mq_path>
+    <mq_path>test-worker:test-worker@srv-4.yottos.com/test-worker</mq_path>
 
 
     <!--Путь к файлу базы данных MaxMind GeoIP City Edition-->
@@ -32,7 +32,7 @@
 <mongo>
     <log>
         <!--Адрес сервера баз данных-->
-        <url>mongodb://localhost:27017</url>
+        <url>mongodb://srv-4.yottos.com:27017</url>
         <!--Название базы данных-->
         <db>getmyad</db>
         <collection_impression>log.impressions</collection_impression>
