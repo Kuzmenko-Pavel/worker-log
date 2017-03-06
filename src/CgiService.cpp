@@ -8,6 +8,7 @@
 #include <string>
 #include <signal.h>
 #include <fcgi_stdio.h>
+#include <limits>
 
 #include "Log.h"
 #include "CgiService.h"
@@ -47,8 +48,8 @@ CgiService::CgiService()
     stat = new CpuStat();
     
     FCGX_Init();
-	//auto client = pool.acquire();
-    //CheckLogDatabase(*client);
+	auto client = pool.acquire();
+    CheckLogDatabase(*client);
     
     mode_t old_mode = umask(0);
     socketId = FCGX_OpenSocket(cfg->server_socket_path_.c_str(), cfg->server_children_ * 4);
@@ -412,8 +413,8 @@ void CgiService::CheckLogDatabase(mongocxx::client &client)
     {
         auto options = mongocxx::options::create_collection();
         options.capped(true);
-        options.max(1000000);
-        options.size(700*1000000);
+        options.max(4000000);
+        options.size(std::numeric_limits<int>::max());
         db.create_collection(cfg->mongo_log_collection_impression_, options);
     }
 }
